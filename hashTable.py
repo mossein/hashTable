@@ -58,14 +58,18 @@ class HashTable:
 
         #Resolve collision using probing
     
-        if self.probing == "L" or "l":
+        if self.probing == "l":
             newIndex = self.linear(index)
-        elif self.probing == "Q" or "q":
+            
+        elif self.probing == "q":
             newIndex = self.quadratic(index)
-        elif self.probing == "D" or "d":
+            
+        elif self.probing == "d" :
             newIndex = self.doubleHashing(index,k)
+            
         else:
             print("Please enter type of probing correctly. For example l for linear, q for quadratic, and d for double hashing.")
+            return
 
         
         
