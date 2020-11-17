@@ -1,82 +1,120 @@
 class HashTable:
-    def __init__(self,N):
+    def __init__(self,N,P):
         self.size = N
-        #self.probing = probing
-        self.H = [[None]] * self.size
+        self.H = [None] * self.size
+        self.setMap()
+        self.probing = P
+
+    def setMap(self):
+        for i in range(self.size):
+            self.H[i] = []
+
+    def hashFunction(self,key):
+        index = key % self.size
+        return index
+
+    #Get new indexPosition for tuple
+    def linear(self, index):
+        #Check for Collision in hash Map
+        if len(self.H[index]) == 0:
+            print("I am in base case")
+            return index
+        else:
+            nextIndex = (index+1)%self.size
+            return self.linear(nextIndex)
+
+    def quadratic(self, index):
+        j = 0
+        newIndex = index
+        while(len(self.H[newIndex]) != 0):
+            newIndex = (index + j*j) % self.size
+            j += 1
+        return newIndex
+
+    def doubleHashing(self, index, key):
+        j = 0
+        newIndex = index
+        secondHash = 7 - key % 7
+        while(len(self.H[newIndex]) != 0):
+            newIndex = (index + (j * secondHash) % self.size)
+            j += 1
+        return newIndex
+        
+        
 
     def put(self,k,v):
-        if self.H[k-1] is not None:
-            self.H[k-1] = []
-            self.H[k-1].append((k,v))
-        else:
-            self.H[k-1] = []
-            self.H[k-1].append((k,v))
-
-    def get(self, k):
-        if(k > self.size):
-            print()
-            print("Cannot check key: Key does not exist")
-            return
-
-        #Check if array in that position is == to none
-        elif self.H[k-1] is None:
-            print("404, Not Found!")
         
-        else:
-            for arr in self.H:
+        #Check if key exist
+        for arr in self.H:
+            if arr == None:
+                continue
+            else:
                 for tup in arr:
-                    #Check if tuple inside the array is equal to None
-                    if tup == None:
-                        continue
-                    elif tup[0] == k:
-                        return print(tup[1])
-                
-
-
-    def remove(self,k):
-        if(k > self.size):
-            print()
-            print("Cannot remove key: Key does not exist")
-            return
-
-        #Check if array in that position is == to none
-        elif self.H[k-1] is None:
-            print("404, Not Found!")
+                    if tup[0] == k:
+                        tup = (k,v)
         
+        #Get the index for the new tuple
+        index = self.hashFunction(k)
+
+        #Resolve collision using probing
+    
+        if self.probing == "L" or "l":
+            newIndex = self.linear(index)
+        elif self.probing == "Q" or "q":
+            newIndex = self.quadratic(index)
+        elif self.probing == "D" or "d":
+            newIndex = self.doubleHashing(index,k)
         else:
-            for arr in self.H:
-                #i is position of tup
-                for i in range(len(arr)):
-                    #arr[i] is the tup
-                    if arr[i][0] == k:
-                        arr[i] = None
-                    elif arr[i] == None:
-                        continue
+            print("Please enter type of probing correctly. For example l for linear, q for quadratic, and d for double hashing.")
+
+        
+        
+        #Append the tuple to the array in the specified index
+        arr = self.H[newIndex]
+        arr.append((k,v))
+        
+        
+        
+    def get(self, k):
+        #Get Value
+        for arr in self.H:
+            if arr == None:
+                continue
+            else:
+                for tup in arr:
+                    if tup[0] == k:
+                        return tup[1]
+                    
+    def remove(self,k):
+        #Given k, remove and return (k,v)
+        for arr in self.H:
+            if arr == None:
+                continue
+            else:
+                for tup in arr:
+                    if tup[0] == k:
+                        tempTup = tup
+                        arr.remove(tup)
+                        return tempTup
                         
                 
-
-
-        
-
-
-
-          
-    def printt(self):
+    def print(self):
         for item in self.H:
             print (item, end=" ")
+        print()
         print()
 
 
 #Main Code 
-h = HashTable(4)
-h.put(1,200)
-h.put(3,400)
-h.put(4,400)
-h.put(2,400)
-h.remove(3)
-h.printt()
-#h.get(1)
-print()
+h = HashTable(4," ")
+h.put(0,200)
+h.put(4,200)
+h.put(101,222)
+#h.put(4,600)
+#h.put(5,300)
+h.print()
+
+
 
 
         
